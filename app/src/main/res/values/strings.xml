@@ -1,3 +1,33 @@
 <resources>
     <string name="app_name">Soundcapture</string>
+    <string-array name="Source">
+        <item>2 WHEELER-1</item>
+        <item>2 WHEELER-2</item>
+        <item>4 WHEELER-1</item>
+        <item>4 WHEELER-2</item>
+        <item>6 WHEELER</item>
+    </string-array>
+    <string-array name="Distance">
+        <item>0 m</item>
+        <item>5 m</item>
+        <item>10 m</item>
+        <item>15 m</item>
+        <item>20 m</item>
+        <item>25 m</item>
+        <item>30 m</item>
+        <item>35 m</item>
+        <item>40 m</item>
+        <item>45 m</item>
+        <item>50 m</item>
+    </string-array>
+
+    <string-array name="TimeInterval">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
+
+    <string name="title_activity_maps">Map</string>
 </resources>

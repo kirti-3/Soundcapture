@@ -2,18 +2,11 @@ package com.iot.bcrec.soundcapture;
 
 import android.app.Service;
 import android.content.Intent;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
-import android.media.MediaRecorder;
 import android.os.IBinder;
-import android.support.annotation.IntDef;
-import android.util.Log;
-
-import java.util.Arrays;
 
 public class SoundService extends Service {
 
-    public static final String TAG="Sound";
+    /**public static final String TAG="Sound";
     int bufferSize;
     private short[] audioBuffer;
     public int bufferReadSize;
@@ -46,7 +39,7 @@ public class SoundService extends Service {
         }
         return null;
     }
-
+*/
     public SoundService() {
     }
 
@@ -55,7 +48,7 @@ public class SoundService extends Service {
         return null;
     }
 
-    @Override
+    /**@Override
     public void onCreate() {
         super.onCreate();
         Log.i(TAG,"Service created");
@@ -107,5 +100,5 @@ public class SoundService extends Service {
     public void onDestroy() {
         isRecording= false;
         super.onDestroy();
-    }
+    }*/
 }

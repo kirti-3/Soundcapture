@@ -10,25 +10,18 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.TileOverlay;
-import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.google.android.gms.maps.model.TileProvider;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.maps.android.heatmaps.HeatmapTileProvider;
-
-import java.util.ArrayList;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    String tag, node;
     DatabaseReference rootRef;
-    final ArrayList<LatLng> listas = null;
-    TileProvider mProvider;
-    TileOverlay mOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +31,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-       // addHeatMap();
+
 
 
     }
+
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -53,61 +48,118 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
 
 
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
-      //  addHeatMap();
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        final DatabaseReference userRef = rootRef.child("IMEI");
         mMap = googleMap;
-        LatLng sydney = new LatLng(37, -122);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+
+        userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds : dataSnapshot.getChildren()){
+                    node= String.valueOf(ds.getKey());
+                    tag=node;
+                    Log.d(MainActivity.TAG,"1"+ node);
+                    //Log.i(TAG, String.valueOf(++k));
+                    userRef.child(node).limitToLast(1).addChildEventListener(new ChildEventListener() {
+                        @Override
+                        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                            double data2= 0.0;
+                            Double Lat = Double.parseDouble(String.valueOf(dataSnapshot.child("latitude").getValue()));
+                            Double Lng = Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue()));
+                            Double data1 = Double.valueOf(String.valueOf(dataSnapshot.child("Data").getValue()));
+                            LatLng newLocation = new LatLng(Lat,Lng);
+                            tag = dataSnapshot.getRef().toString();
+                            String[] tokens= tag.split("/");
+                            String tag1 = tokens[tokens.length-2];
+                            Log.d(MainActivity.TAG,"2"+ node);
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(newLocation)
+                                    .title( tag1 + " SoundData =" + data1 ));
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation,20));
+                        }
+
+                        @Override
+                        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                        }
+
+                        @Override
+                        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        /*userRef.addChildEventListener(new ChildEventListener() {
+
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String prevChildKey) {
+                if(dataSnapshot.child("latitude").getValue()!=null && dataSnapshot.child("longitude").getValue()!=null)
+                {
+                    Double Lat = Double.parseDouble(String.valueOf(dataSnapshot.child("latitude").getValue()));
+                    Double Lng = Double.parseDouble(String.valueOf(dataSnapshot.child("longitude").getValue()));
+                    Double data1 = Double.parseDouble(String.valueOf(dataSnapshot.child("Data").getValue()));
+                    LatLng newLocation = new LatLng(Lat,Lng);
+                    mMap.addMarker(new MarkerOptions()
+                            .position(newLocation)
+                            .title(MainActivity.imei + "SoundData=" + data1 ));
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(newLocation,15));
+
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String prevChildKey) {}
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String prevChildKey) {}
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        Query lastQuery = databaseReference.child(MainActivity.imei).orderByKey().limitToLast(1);
+        lastQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                data = dataSnapshot.child("Data").getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                //Handle possible errors.
+            }
+        });
+
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(23.544, 87.3387);
+        mMap.addMarker(new MarkerOptions().position(sydney).title(MainActivity.imei + "SoundData=" +data));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+*/
 
     }
-
-    public void addHeatMap()
-    {
-       // readItems();
-    }
-
-    public void readItems()
-        {
-
-            rootRef = FirebaseDatabase.getInstance().getReference();
-            DatabaseReference userRef = rootRef.child("RAW DATA");
-            userRef.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot ds: dataSnapshot.getChildren())
-                    {
-                        Log.i("kks12345",ds.getKey());
-                        Double Lat = Double.parseDouble(String.valueOf(ds.child("latitude").getValue()));
-                        Double Lng = Double.parseDouble(String.valueOf(ds.child("longitude").getValue()));
-                        Log.i("kks12345",Lat.toString());
-                        Log.i("kks12345",Lng.toString());
-                         LatLng latt= new LatLng(Lat,Lng);
-                         listas.add(latt);
-
-                         Log.i("kks12345", latt.toString());
-
-                    }
-                    Log.i("kks12345", listas.toString());
-                    mProvider = new HeatmapTileProvider.Builder()
-                            .data(listas)
-                            .build();
-                    // Add a tile overlay to the map, using the heat map tile provider.
-                    mOverlay = mMap.addTileOverlay(new TileOverlayOptions().tileProvider(mProvider));
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-        }
-
-
-
-    }
-
+}

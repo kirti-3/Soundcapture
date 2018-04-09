@@ -27,7 +27,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -42,9 +41,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     Intent storage;
     Intent location;
     Intent j;
-    TextView textView;
-    int temp=0;
-    double avgdata=0;
 
     public static final int PERMISSION = 0;
     public static final String TAG="Sound";
@@ -86,15 +82,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         public void onReceive(Context context, Intent intent) {
             String Result = intent.getStringExtra("Data1");
-           //String intvl = intent.getStringExtra("interval");
-           //temp =Integer.parseInt(intvl);
-
-            temp=temp+1;
-            int limit = Integer.parseInt(time1)*60*2;
-            double temp1 = Double.parseDouble(Result);
-            avgdata =avgdata + Math.pow(10,temp1/10);
-            Log.i("kksTURN",String.valueOf(temp));
-            Log.i("kks1234",String.valueOf(avgdata));
             state = intent.getBooleanExtra("button",false);
             if(state){
                 /**stopService(sound);
@@ -103,20 +90,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 startbtn.setEnabled(true);
 
             }
-            if(temp==limit)
-            {
-                avgdata =avgdata/limit;
-                avgdata =10 * Math.log10(avgdata);
-                String out = String.valueOf(avgdata);
-                Log.i("kksLOGMean",String.valueOf(avgdata));
-                textView.setText(out);
-                stopService(sound);
-                stopService(storage);
-                stopService(location);
-                startbtn.setEnabled(true);
-            }
+
             e1.setText(Result);
-            //textView.setText(intvl);
 
 
         }
@@ -124,8 +99,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     public void onRecord(View view)
     {
-        temp=0;
-        avgdata=0;
 
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
@@ -244,14 +217,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         e1=(EditText) findViewById(R.id.editText);
         startbtn = (Button) findViewById(R.id.button);
         stopbtn = (Button) findViewById(R.id.button2);
-       textView =(TextView)findViewById(R.id.textViewAvg);
         sourcespinner=(Spinner)findViewById(R.id.spinner);
         sourcespinner.setOnItemSelectedListener(this);
         distancespinner=(Spinner)findViewById(R.id.spinner2);
         distancespinner.setOnItemSelectedListener(this);
-        timeintervalspinner=(Spinner)findViewById(R.id.spinner3);
-        timeintervalspinner.setOnItemSelectedListener(this);
-
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.Source, android.R.layout.simple_spinner_item);
@@ -263,10 +232,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         distancespinner.setAdapter(adapter2);
 
-        ArrayAdapter<CharSequence> adapter3 = ArrayAdapter.createFromResource(this,
-                R.array.TimeInterval, android.R.layout.simple_spinner_item);
-        adapter2.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        timeintervalspinner.setAdapter(adapter3);
+
 
 
         startbtn.setEnabled(true);
@@ -325,24 +291,15 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             Log.i(TAG,dist);//do this
 
         }
-        else if(spinner.getId() == R.id.spinner3)
-        {
-            time1= parent.getItemAtPosition(i).toString();
-           // j.putExtra("distance",time1);
-            Log.i(TAG,time1);//do this
-
-        }
 
     }
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
         sour = "N/A";
         dist = "N/A";
-        time1 = "1";
 
         j.putExtra("source", sour);
         Log.i(TAG,sour);
-
 
         j.putExtra("distance",dist);
         Log.i(TAG,dist);

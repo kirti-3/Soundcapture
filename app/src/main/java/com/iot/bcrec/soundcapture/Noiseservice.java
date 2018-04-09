@@ -485,7 +485,7 @@ public class Noiseservice extends Service
                             indexTimeDisplay = 1;
                             linearATimeDisplay = 0;
 
-                            /**if(count>10){
+                            /*if(count>){
                                 isRecording=false;
                                 noi.putExtra("button",true);
                                 sendBroadcast(noi);
@@ -519,27 +519,6 @@ public class Noiseservice extends Service
 
         return Service.START_REDELIVER_INTENT;
     }
-
-    /*public String counting(double data,int cont)
-    {
-
-        int limit = Integer.parseInt(MainActivity.time1)*60;
-        avgdata =avgdata + Math.pow(10,data/10);
-        Log.i("kksTURN",String.valueOf(cont));
-        Log.i("kks1234",String.valueOf(avgdata));
-        if(cont==limit)
-        {
-            avgdata =avgdata/limit;
-            avgdata =10 * Math.log10(avgdata);
-            String out = String.valueOf(avgdata);
-            Log.i("kksLOGMean",String.valueOf(avgdata));
-
-            return out;
-        }
-        return "0";
-    }*/
-
-
 
     @Override
     public void onDestroy() {
